@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    username: helloworld
+    password: secretpassword
+    url: jdbc:postgresql://localhost:5432/helloworld
