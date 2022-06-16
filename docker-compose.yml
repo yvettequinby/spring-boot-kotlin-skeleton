@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  db:
+  pg-db:
     image: postgres:14.1-alpine
     restart: always
     environment:
@@ -10,6 +10,19 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+  helloworld: &helloworld
+    depends_on:
+      - pg-db
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+  helloworld-local:
+    <<: *helloworld
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://pg-db:5432/helloworld"
 volumes:
   db:
     driver: local

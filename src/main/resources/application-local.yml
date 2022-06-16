@@ -1,3 +1,5 @@
+helloworld:
+  jwt-secret: jwt-secret
 spring:
   datasource:
     username: helloworld

@@ -1,3 +1,5 @@
+helloworld:
+  jwt-secret: ${JWT_SECRET}
 server:
   servlet:
     context-path: /helloworld
@@ -12,3 +14,5 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}

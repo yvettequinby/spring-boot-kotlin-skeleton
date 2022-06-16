@@ -18,7 +18,7 @@ Demo application for the following features / tech stack:
 * IntelliJ (not really, but instructions below will assume you have it)
 
 
-* Docker Desktop
+* Docker Desktop (running)
 
 
 * Basic knowledge of Spring Boot and IntelliJ IDE (how to push the green button that makes app go)
@@ -29,18 +29,15 @@ Demo application for the following features / tech stack:
 
 ## Running Locally
 
-1. Run `docker-compose up` from the command line. This will start the Postgres docker container.
+1. Run `docker-compose up -d pg-db` from the command line. This will start the Postgres docker container.
 
 
-2. Edit the Spring Boot application run configuration (in IntelliJ): set the "active profiles" value to "local"
-
-
-3. Run the Spring Boot application in your IDE. This will:
+2. Run the Spring Boot application in your IDE. This will:
    1. Automatically trigger Flyway to run DB migration scripts.
    2. Initialize DB with test user data
 
 
-4. Use Postman to make POST request to `/helloworld/auth` endpoint, with JSON body:
+3. Use Postman to make POST request to `/helloworld/auth` endpoint, with JSON body:
 
 ```
 {
@@ -49,18 +46,40 @@ Demo application for the following features / tech stack:
 }
 ```
 
-3. Copy the resulting token. Use Postman to make GET request to `/helloworld` endpoint, with the token in the Authorization header (Bearer)
+4. Copy the resulting token. Use Postman to make GET request to `/helloworld` endpoint, with the token in the Authorization header (Bearer)
 
 
-## Security
+## Running Locally in Docker
 
-Uses JWT Authentication, based partly on [this example](https://medium.com/geekculture/implementing-json-web-token-jwt-authentication-using-spring-security-detailed-walkthrough-1ac480a8d970).
+If you want to run the application within Docker, follow these steps:
+
+1. Run `docker-compose up -d helloworld-local --build` from the command line. 
+This will build the application docker image from the docker/Dockerfile and run both the Postgres DB container and the Application container. 
+
+
+### Troubleshoot Local Docker
+
+* Stop all webapps running outside of Docker (they might be occupying the port)
+* Stop all running Docker containers: `docker kill $(docker ps -q)`
+* Rebuild the Docker image: `docker-compose build helloworld-local --no-cache`
+
+
+## Building The Application Docker Image
+
+`docker-compose build helloworld --no-cache`
+
+
+## Application Security
+
+This application use JWT Authentication, based partly on [this example](https://medium.com/geekculture/implementing-json-web-token-jwt-authentication-using-spring-security-detailed-walkthrough-1ac480a8d970).
+
+It's a very basic implementation.
 
 See [here](https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter) for more detail on configuring Spring Boot security.
 
-NOT FOR PRODUCTION - DEMO FEATURES
 
-* JWT secret is currently hard-coded. This should be an env variable, exposed via K8s secrets
+## TODO
 
-
-* Users/Passwords currently hard-coded and in memory. Should be replaced with DB storage.
+* Unit Tests
+* Logging
+* Metrics

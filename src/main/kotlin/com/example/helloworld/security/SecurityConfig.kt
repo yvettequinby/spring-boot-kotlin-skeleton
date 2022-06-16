@@ -1,71 +1,59 @@
-package com.example.helloworld.security;
+package com.example.helloworld.security
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Configuration
-public class SecurityConfig {
-
-    private final JWTFilter jwtFilter;
-
-    private final HelloUserDetailsService userDetailsService;
-
-
-    public SecurityConfig(JWTFilter jwtFilter, HelloUserDetailsService userDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
-    }
-
+class SecurityConfig(private val jwtFilter: JWTFilter, private val userDetailsService: HelloUserDetailsService) {
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    @Throws(Exception::class)
+    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+        return authenticationConfiguration.authenticationManager
     }
 
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Throws(Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
-                .httpBasic().disable()
-                .cors()
-                .and()
-                .authorizeHttpRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/**").hasRole("USER")
-                .and()
-                .userDetailsService(userDetailsService)
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        // Rejecting request as unauthorized when entry point is reached
-                        // If this point is reached it means that the current request requires authentication
-                        // and no JWT token was found attached to the Authorization header of the current request.
-                        (request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+            .httpBasic().disable()
+            .cors()
+            .and()
+            .authorizeHttpRequests()
+            .antMatchers("/auth/**").permitAll()
+            .antMatchers("/**").hasRole("USER")
+            .and()
+            .userDetailsService(userDetailsService)
+            .exceptionHandling()
+            .authenticationEntryPoint { request: HttpServletRequest?, response: HttpServletResponse, authException: AuthenticationException? ->
+                // Rejecting request as unauthorized when entry point is reached
+                // If this point is reached it means that the current request requires authentication
+                // and no JWT token was found attached to the Authorization header of the current request.
+                response.sendError(
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Unauthorized"
                 )
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+            }
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
+        return http.build()
     }
-
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
-
 }
