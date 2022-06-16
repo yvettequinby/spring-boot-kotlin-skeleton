@@ -9,6 +9,7 @@ Demo application for the following features / tech stack:
 * JPA / Postgres
 * Flyway
 * Docker
+* Micrometer (metrics)
 
 
 ## Requirements
@@ -80,8 +81,30 @@ It's a very basic implementation.
 See [here](https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter) for more detail on configuring Spring Boot security.
 
 
+## Actuator Endpoints
+
+Application is configured with the following actuator endpoints:
+
+* /actuator/health
+* /actuator/info
+* /actuator/metrics
+
+The application is further configured with micrometer. Metrics can be accessed here:
+
+* /helloworld/actuator/metrics/<<metric-name-goes-here>>
+
+The /helloworld GET endpoint (HelloController) includes example usage of micrometer's  @Timed. 
+After hitting the endpoint, you can view the metrics by making a GET request to:
+
+* localhost:8080/helloworld/actuator/metrics/hello-world-endpoint
+
+The same endpoint uses HelloService, which includes an example of a custom micrometer counter.
+You can view the metrics by making a GET request to:
+
+* localhost:8080/helloworld/actuator/metrics/hello-custom-counter
+
 ## TODO
 
 * Unit Tests
 * Logging
-* Metrics
+* Metrics: test exporting to Datadog

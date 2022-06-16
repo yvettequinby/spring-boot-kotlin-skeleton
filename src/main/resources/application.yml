@@ -16,3 +16,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, metrics
+  metrics:
+    export:
+      datadog:
+        api-key: ${DATADOG_API_KEY:data-dog-key}
+        enabled: true
+        step: 1m
