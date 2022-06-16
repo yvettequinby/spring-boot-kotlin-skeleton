@@ -37,7 +37,9 @@ Demo application for the following features / tech stack:
    2. Initialize DB with test user data
 
 
-3. Use Postman to make POST request to `/helloworld/auth` endpoint, with JSON body:
+## Using the API (Local)
+
+1. Use Postman to make POST request to `localhost:8080/helloworld/auth` endpoint, with JSON body:
 
 ```
 {
@@ -46,7 +48,7 @@ Demo application for the following features / tech stack:
 }
 ```
 
-4. Copy the resulting token. Use Postman to make GET request to `/helloworld` endpoint, with the token in the Authorization header (Bearer)
+2. Copy the resulting token. Use Postman to make GET request to `localhost:8080/helloworld` endpoint, with the token in the Authorization header (Bearer)
 
 
 ## Running Locally in Docker
