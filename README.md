@@ -89,17 +89,21 @@ Application is configured with the following actuator endpoints:
 * /actuator/info
 * /actuator/metrics
 
-The application is further configured with micrometer. Metrics can be accessed here:
 
-* /helloworld/actuator/metrics/<<metric-name-goes-here>>
+## Metrics
 
-The /helloworld GET endpoint (HelloController) includes example usage of micrometer's  @Timed. 
+In addition to standard Actuator metrics, the application configured with micrometer. 
+Individual metrics are accessed via an endpoint like:
+
+* GET /helloworld/actuator/metrics/<<metric-name-goes-here>>
+
+The /helloworld GET endpoint (HelloController) includes example usage of micrometer's @Timed annotation. 
 After hitting the endpoint, you can view the metrics by making a GET request to:
 
 * localhost:8080/helloworld/actuator/metrics/hello-world-endpoint
 
-The same endpoint uses HelloService, which includes an example of a custom micrometer counter.
-You can view the metrics by making a GET request to:
+The same HelloController makes a call to HelloService, which includes an example of a custom micrometer counter.
+You can view the metrics for this custom counter by making a GET request to:
 
 * localhost:8080/helloworld/actuator/metrics/hello-custom-counter
 
