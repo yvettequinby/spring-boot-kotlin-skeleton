@@ -9,3 +9,4 @@ class HelloworldApplication
 fun main(args: Array<String>) {
     runApplication<HelloworldApplication>(*args)
 }
+

@@ -10,3 +10,6 @@ management:
     export:
       datadog:
         enabled: false
+logging:
+  level:
+    com.example.helloworld: debug

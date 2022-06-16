@@ -22,6 +22,9 @@ Demo application for the following features / tech stack:
 * Docker Desktop (running)
 
 
+* Postman (not really, but instructions below will assume you have it)
+
+
 * Basic knowledge of Spring Boot and IntelliJ IDE (how to push the green button that makes app go)
 
 
@@ -36,6 +39,7 @@ Demo application for the following features / tech stack:
 2. Run the Spring Boot application in your IDE. This will:
    1. Automatically trigger Flyway to run DB migration scripts.
    2. Initialize DB with test user data
+   3. Start the application running on localhost:8080
 
 
 ## Using the API (Local)
@@ -107,8 +111,16 @@ You can view the metrics for this custom counter by making a GET request to:
 
 * localhost:8080/helloworld/actuator/metrics/hello-custom-counter
 
+
+## Logging
+
+Logging uses SLF4j. See examples in HelloService.
+
+See application-local.yml for example on overriding default log levels.
+
+
 ## TODO
 
 * Unit Tests
-* Logging
+* Logging: test exporting to Datadog
 * Metrics: test exporting to Datadog
