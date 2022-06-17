@@ -10,6 +10,7 @@ Demo application for the following features / tech stack:
 * Flyway
 * Docker
 * Micrometer (metrics)
+* Kubernetes / K8s
 
 
 ## Requirements
@@ -19,7 +20,13 @@ Demo application for the following features / tech stack:
 * IntelliJ (not really, but instructions below will assume you have it)
 
 
-* Docker Desktop (running)
+* Docker Desktop, with Kubernetes Enabled
+
+
+* Kubectl
+
+
+* A Dockerhub account and repo (if you want to do the K8s deployment step)
 
 
 * Postman (not really, but instructions below will assume you have it)
@@ -71,10 +78,116 @@ This will build the application docker image from the docker/Dockerfile and run 
 * Rebuild the Docker image: `docker-compose build helloworld-local --no-cache`
 
 
-## Building The Application Docker Image
+## Deploying To (Local) Kubernetes
+
+This section is a very simplified example of deploying to a local kubernetes cluster. 
+It is based on the tutorials available [here](https://kubebyexample.com/en/learning-paths/developing-spring-boot-kubernetes).
+
+_Requirements_:
+* Kubernetes enabled on your Docker Desktop (open Docker Desktop / preferences to enable)
+* Kubectl installed
+* A Dockerhub account and repo for this project
+
+First, make sure your local database is running. 
+
+`docker-compose up -d pg-db`
+
+
+Next, login to your Dockerhub account from the command line:
+
+`docker login`
+
+Next, build the Docker image:
 
 `docker-compose build helloworld --no-cache`
 
+Tag the built image to match your Dockerhub account and repo:
+
+`docker tag helloworld_helloworld <<YOUR ACCOUNT>>/<<YOUR REPO>>:latest`
+
+Push the image to your docker repo:
+
+`docker push <<YOUR ACCOUNT>>/<<YOUR REPO>>:latest`
+
+Verify the Kubernetes environment is enabled in your local Docker Desktop
+by running the following commands:
+
+```
+kubectl config get-contexts
+kubectl config use-context docker-desktop
+kubectl get nodes
+kubectl get all
+```
+
+The commands should allow you to see the Docker Desktop K8s cluster and the single node running in the cluster.
+
+Generate a deployment.yml by running the following command:
+
+`kubectl create deployment helloworld --image <<YOUR ACCOUNT>>/<<YOUR REPO>> --dry-run=client -o=yaml > deployment.yml`
+
+deployment.yml will be created in the project root directory.
+
+You must now add the SPRING_DATASOURCE_URL environment variable, so that the application can connect to the database running in Docker (outside K8s).
+Edit the deployment.yml and add `env` section to the `spec/containers`:
+
+```
+spec:
+   containers:
+   - image: xxx/zzz
+     name: yyy
+     resources: {}
+     env:
+       - name: SPRING_DATASOURCE_URL
+         value: jdbc:postgresql://host.docker.internal:5432/helloworld
+```
+
+Now deploy the application to K8s:
+
+`kubectl apply -f deployment.yml`
+
+Verify the deployment by running:
+
+`kubectl get all`
+
+Now generate the service.yml:
+
+`kubectl create service nodeport helloworld --tcp=8080:8080 --dry-run=client -o=yaml > service.yml`
+
+service.yml will be created in the project root directory.
+
+Now create the service in K8s:
+
+`kubectl apply -f service.yml`
+
+Verify the service creation by running:
+
+`kubectl get all`
+
+You should now be able to access the endpoints. You must use the port mapping shown for the service.
+For example:
+
+```
+xxx@DEM0164 helloworld % kubectl get all
+
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/helloworld-6b95496dc8-kd85z   1/1     Running   0          5m20s
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/helloworld   NodePort    10.102.148.51   <none>        8080:30485/TCP   8s
+```
+Would require a GET call to localhost:30485/helloworld/actuator/health
+
+The port number changes with each deployment.
+
+### Access K8s Logs
+kubectl logs --tail=20 << POD NAME >>
+
+### Terminate Service and Deployment
+
+```
+kubectl delete service helloworld
+kubectl delete deployment helloworld
+```
 
 ## Application Security
 
@@ -117,6 +230,8 @@ You can view the metrics for this custom counter by making a GET request to:
 Logging uses SLF4j. See examples in HelloService.
 
 See application-local.yml for example on overriding default log levels.
+
+
 
 
 ## TODO
