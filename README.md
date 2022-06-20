@@ -189,6 +189,11 @@ kubectl delete service helloworld
 kubectl delete deployment helloworld
 ```
 
+### Troubleshooting or more info...
+
+Check out the [tutorial](https://kubebyexample.com/en/learning-paths/developing-spring-boot-kubernetes) this guide is based on. 
+It also includes sections on configuring K8s readiness and liveness probes with Spring Boot actuator.
+
 ## Application Security
 
 This application use JWT Authentication, based partly on [this example](https://medium.com/geekculture/implementing-json-web-token-jwt-authentication-using-spring-security-detailed-walkthrough-1ac480a8d970).
