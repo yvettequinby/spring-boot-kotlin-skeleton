@@ -6,8 +6,8 @@ Demo application for the following features / tech stack:
 * Kotlin
 * REST API
 * JWT Security (Bearer Token)
-* JPA / Postgres
-* Flyway
+* JPA (with Postgres) 
+* Flyway (db migrations)
 * Docker
 * Micrometer (metrics)
 * Kubernetes / K8s
@@ -237,10 +237,14 @@ Logging uses SLF4j. See examples in HelloService.
 See application-local.yml for example on overriding default log levels.
 
 
+## Tests
+
+The test folder includes the default SpringBootTest 
+and an example JUnit5 unit test for the Hello World controller.
 
 
 ## TODO
 
-* Unit Tests
+* More Unit Tests
 * Logging: test exporting to Datadog
 * Metrics: test exporting to Datadog
